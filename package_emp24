@@ -1,0 +1,74 @@
+//creating table named emp24
+CREATE TABLE emp24
+(
+ ename varchar(20),
+ eid number(10),
+ job varchar(20),
+ mgr number(10),
+ hiredate date,
+ sal number(10),
+ deptno number(6)
+);
+
+//insering values into table emp24
+insert into emp24 values('Bibhuti Singha', 110024 , HR , DATE '2022-11-3' , 800000 , 1);
+
+
+
+//creating package specification (package named emp24_pck)
+CREATE PACKAGE emp24_pck
+AS
+FUNCTION hire_emp(name VARCHAR,job VARCHAR,hiredate DATE,sal NUMBER,deptno NUMBER)
+RETURN NUMBER;
+PROCEDURE fire_emp (emp_id NUMBER);
+PROCEDURE sal_raise(emp_id NUMBER);
+END emp24_pck;
+
+//creating package body
+
+CREATE PACKAGE BODY emp24_pck
+AS
+FUNCTION hire_emp(name VARCHAR,job VARCHAR,hiredate DATE,sal NUMBER,deptno NUMBER)
+RETURN NUMBER;
+IS 
+new_empno NUMBER(10);
+BEGIN
+SELECT emp_sequence.NEXTVAL INTO new_empno FROM dual;
+INSERT INTO emp VALUES(new_empno,name,job,hiredate,deptno);
+RETURN (new_empo);
+END hire_emp;
+
+
+PROCEDURE fire_emp(emp_id IN NUMBER)
+AS
+BEGIN
+DELETE FROM emp WHERE empno=emp_id;
+
+IF SQL% NOTFOUND THEN
+raise_application_error(-20011,'Invalid Employee Number:'|| TO_CHAR(emp_id));
+END IF;
+END fire_emp;
+
+
+PROCEDURE sal_raise(emp_id IN NUMBER sal_incr IN NUMBER)
+AS
+UPDATE emp SET sal=sal+sal_incr WHERE empno=emp_id;
+IF SQL% NOTFOUND THEN
+raise_application_error (-20011,'Invalid Employee Number:'|| TO_CHAR(emp_id));
+END IF;
+END sal_raise;
+END emp24_pck;
+
+DECLARE 
+name emp24_pck.name% type;
+sal emp24_pck.sal% type;
+deptno emp24_pck.deptno% type;
+emp_id emp24_pck.emp_id% type;
+BEGIN
+name:='&name';
+sal:=&sal;
+deptno:=&deptno;
+emp_id:=emp24_pck.hire(name,sal,deptno);    //calling from main function
+emp24_pck.sal_incr(emp_id);
+END;
+
